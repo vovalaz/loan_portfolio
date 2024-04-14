@@ -1,0 +1,38 @@
+version: '3'
+
+volumes:
+  pg-data:
+    external: false
+
+services:
+
+# BACKEND SERVICES
+  web:
+    build:
+      context: .
+      dockerfile: ./backend/docker/Dockerfile
+    command: [ 'bash', './docker/web_start.sh' ]
+    env_file:
+      - backend/.env.prod
+    volumes:
+      - .:/loan_portfolio
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+
+  db:
+    image: postgres:14
+    expose:
+      - "5432"
+    env_file:
+      - backend/.env.prod
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+
+# FRONTEND SERVICES
