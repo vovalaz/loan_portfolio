@@ -1,0 +1,32 @@
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | .pytest_cache
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+  | media
+  | mediafiles
+  | templates
+  | static
+  | staticfiles
+  | venv
+  | env
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+src_paths=["src"]
+skip=[".gitignore", "static", "media", "mediafiles", "venv", "env"]
+no_lines_before=["LOCALFOLDER"]
