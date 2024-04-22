@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from django.utils import timezone as tz
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -9,6 +11,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = [os.getenv("DJANGO_ALLOWED_HOSTS")]
+
+AUTH_USER_MODEL = "user.User"
 
 INSTALLED_APPS = [
     # django apps
@@ -19,8 +23,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # third-party apps
+    "django_filters",
     "rest_framework",
+    "rest_framework_simplejwt",
     # local apps
+    "authentication",
+    "credit",
+    "payment",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -80,6 +90,28 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
+SIMPLE_JWT = {
+    "UPDATE_LAST_LOGIN": True,
+    "ACCESS_TOKEN_LIFETIME": tz.timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": tz.timedelta(days=30),
+}
 
 LANGUAGE_CODE = "en-us"
 
