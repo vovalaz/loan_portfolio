@@ -3,8 +3,7 @@ import {
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-
+import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "~/env";
 
 /**
@@ -44,9 +43,39 @@ export const authOptions: NextAuthOptions = {
     }),
   },
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    CredentialsProvider({
+      id: "credentials",
+      name: "credentials",
+      credentials: {
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "Enter email",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Enter password",
+        },
+      },
+      authorize(credentials) {
+        if (
+          credentials?.email === env.ADMIN_EMAIL &&
+          credentials?.password === env.ADMIN_PASSWORD
+        ) {
+          return {
+            id: "1",
+            email: env.ADMIN_EMAIL,
+            name: "Admin",
+          };
+        }
+
+        return {
+          id: "2",
+          email: credentials?.email,
+          name: credentials?.email.split("@")[0],
+        };
+      },
     }),
     /**
      * ...add more providers here.
