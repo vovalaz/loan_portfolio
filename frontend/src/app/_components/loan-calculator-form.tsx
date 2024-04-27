@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   Select,
   SelectContent,
@@ -44,6 +44,7 @@ const formSchema = z.object({
     .max(60, {
       message: "Term must be between 1 and 60 months",
     }),
+  months: z.array(z.number()),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -78,7 +79,10 @@ export default function LoanCalculatorForm({
   }, [form, form.watch]);
 
   function onSubmit(values: FormSchema) {
-    console.log(additionalFields);
+    const monthsSum = values.months.reduce((acc, curr) => acc + curr, 0);
+    if (monthsSum >= values.amount) {
+      console.log("Error");
+    }
     console.log(values);
   }
 
@@ -86,7 +90,7 @@ export default function LoanCalculatorForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("flex flex-row gap-10", className)}
+        className={cn("flex flex-row items-center gap-10", className)}
       >
         <div className="space-y-8">
           <FormField
@@ -156,7 +160,29 @@ export default function LoanCalculatorForm({
         <div className="flex flex-col items-center">
           <div className="grid grid-cols-3 gap-4">
             {Array.from({ length: additionalFields }, (_, index) => (
-              <Input key={index} placeholder={`Extra Field ${index + 1}`} />
+              <Controller
+                key={index}
+                name={`months.${index}`}
+                control={form.control}
+                defaultValue={0}
+                render={() => (
+                  <FormItem>
+                    <FormLabel>{`Month ${index + 1}`}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step={0.01}
+                        placeholder="Enter loan amount"
+                        {...form.register(`months.${index}`, {
+                          valueAsNumber: true,
+                        })}
+                      />
+                    </FormControl>
+                    {/* <FormDescription>Enter loan amount</FormDescription> */}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             ))}
           </div>
         </div>
