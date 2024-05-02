@@ -4,14 +4,12 @@ from credit.models import Credit
 
 
 class CreditSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source="user.id")
-
     class Meta:
         model = Credit
-        fields = "__all__"
-        read_only_fields = ["user"]
+        fields = ["id", "user", "amount", "term_months", "rate", "purpose", "status"]
 
-    def create(self, validated_data):
-        user = self.context["request"].user
-        credit_request = Credit.objects.create(user=user, **validated_data)
-        return credit_request
+
+class UnauthorisedCreditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Credit
+        fields = ["id", "amount", "term_months", "rate", "purpose", "status"]
