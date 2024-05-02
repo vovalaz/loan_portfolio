@@ -1,3 +1,3 @@
-from .credit import CreditSerializer
+from .credit import CreditSerializer, UnauthorisedCreditSerializer
 
-__all__ = (CreditSerializer,)
+__all__ = (CreditSerializer, UnauthorisedCreditSerializer)
