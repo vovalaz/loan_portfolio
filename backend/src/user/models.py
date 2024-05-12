@@ -14,6 +14,7 @@ class User(AbstractUser, CreatedUpdatedAt):
     username = None
     date_joined = None
     email = models.EmailField(help_text="User Email", unique=True, max_length=64)
+    risk = models.FloatField(default=0.1)
 
     class Meta:
         ordering = ("-id",)
