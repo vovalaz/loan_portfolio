@@ -13,4 +13,4 @@ class PaymentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Payment.objects.all()
         user = self.request.user
-        return queryset if user.is_superuser else queryset.filter(user=user)
+        return queryset if user.is_superuser else queryset.filter(user_payments__user=user)
