@@ -40,3 +40,42 @@ export type PostLoginResponse = PostTokenResponse;
 
 export type GetUserResponse = Omit<User, "passsword">;
 export type GetUsersResponse = GetUserResponse[];
+
+export type PostCreditRequest = {
+  amount: number;
+  term_months: number;
+  credit_type: number;
+  purpose: string;
+  payments: number[];
+};
+
+export type Payment = {
+  amount: number;
+  deadline: string;
+  credit: number;
+};
+
+export type Credit = {
+  id: number;
+  amount: number;
+  term_months: number;
+  credit_type: number;
+  purpose: string;
+  status: string;
+  general_expenses: number;
+  payments: Payment[];
+  annual_rate: number;
+};
+
+export type PostCreditResponse = Credit;
+
+export type CreditType = {
+  id: number;
+  name: string;
+  rate: string;
+  min_amount: string;
+  max_amount: string;
+  min_term_months: string;
+  max_term_months: string;
+};
+export type GetCreditTypesResponse = CreditType[];

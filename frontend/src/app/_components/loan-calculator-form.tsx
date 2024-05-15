@@ -26,6 +26,7 @@ import {
 } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import { useEffect, useState } from "react";
+import type { CreditType } from "~/types";
 
 enum LoanType {
   First = "first",
@@ -34,7 +35,7 @@ enum LoanType {
 }
 
 const formSchema = z.object({
-  type: z.nativeEnum(LoanType),
+  type: z.number(),
   amount: z.number(),
   term: z
     .number()
@@ -52,11 +53,13 @@ export type FormSchema = z.infer<typeof formSchema>;
 type LoanCalculatorFormProps = {
   className?: string;
   onSubmit: (values: FormSchema) => void;
+  creditTypes?: CreditType[];
 };
 
 export default function LoanCalculatorForm({
   className,
   onSubmit,
+  creditTypes,
 }: LoanCalculatorFormProps) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -101,9 +104,11 @@ export default function LoanCalculatorForm({
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Loan types</SelectLabel>
-                        <SelectItem value={LoanType.First}>First</SelectItem>
-                        <SelectItem value={LoanType.Second}>Second</SelectItem>
-                        <SelectItem value={LoanType.Third}>Third</SelectItem>
+                        {creditTypes?.map((type) => (
+                          <SelectItem key={type.id} value={type.id.toString()}>
+                            {type.name}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
