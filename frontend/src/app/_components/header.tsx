@@ -12,8 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   const { data: session } = useSession();
 
   const handleSignIn = async () => {
@@ -24,10 +26,16 @@ export default function Header() {
     await signOut();
   };
 
+  const handleSignUp = () => {
+    router.push("/auth/sign-up");
+  };
+
   return (
-    <header className="flex flex-row items-center justify-between p-4">
-      <div className="flex gap-4">
-        <Link href="/">Loan Portfolio</Link>
+    <header className="flex flex-row items-center justify-between bg-gray-100 p-4">
+      <div className="flex items-center gap-4">
+        <Link className="text-lg font-bold" href="/">
+          Loan Portfolio
+        </Link>
         <Link href="/credits">Credits</Link>
       </div>
       <nav className="flex flex-row gap-4">
@@ -56,7 +64,14 @@ export default function Header() {
             {/* <Link href="/profile">Profile</Link> */}
           </>
         )}
-        {!session?.user && <Button onClick={handleSignIn}>Sign in</Button>}
+        {!session?.user && (
+          <>
+            <Button variant="secondary" onClick={handleSignIn}>
+              Sign in
+            </Button>
+            <Button onClick={handleSignUp}>Sign up</Button>
+          </>
+        )}
       </nav>
     </header>
   );
