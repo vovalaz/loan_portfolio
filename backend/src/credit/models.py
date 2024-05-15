@@ -7,9 +7,9 @@ from base.models import CreatedUpdatedAt
 
 class CreditType(models.Model):
     name = models.CharField(max_length=100)
-    rate = models.DecimalField(max_digits=20, decimal_places=5)
-    min_amount = models.DecimalField(max_digits=20, decimal_places=2)
-    max_amount = models.DecimalField(max_digits=20, decimal_places=2)
+    rate = models.FloatField()
+    min_amount = models.FloatField()
+    max_amount = models.FloatField()
     min_term_months = models.IntegerField()
     max_term_months = models.IntegerField()
 

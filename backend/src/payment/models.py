@@ -13,8 +13,8 @@ class Payment(CreatedUpdatedAt):
         ("paid_late", "Paid late"),
     )
 
-    credit = models.ForeignKey(Credit, on_delete=models.DO_NOTHING)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    credit = models.ForeignKey(Credit, on_delete=models.CASCADE)
+    amount = models.FloatField()
     deadline = models.DateField(null=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="pending")
 
