@@ -12,8 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
   const { data: session } = useSession();
 
   const handleSignIn = async () => {
@@ -22,6 +24,10 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleSignUp = () => {
+    router.push("/auth/sign-up");
   };
 
   return (
@@ -58,7 +64,14 @@ export default function Header() {
             {/* <Link href="/profile">Profile</Link> */}
           </>
         )}
-        {!session?.user && <Button onClick={handleSignIn}>Sign in</Button>}
+        {!session?.user && (
+          <>
+            <Button variant="secondary" onClick={handleSignIn}>
+              Sign in
+            </Button>
+            <Button onClick={handleSignUp}>Sign up</Button>
+          </>
+        )}
       </nav>
     </header>
   );

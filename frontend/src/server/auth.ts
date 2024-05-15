@@ -4,7 +4,19 @@ import {
   type NextAuthOptions,
 } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { env } from "~/env";
+import { authService } from "~/services/authService";
+
+interface User {
+  id: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  image?: string;
+  token: {
+    access: string;
+    refresh: string;
+  };
+}
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -14,11 +26,17 @@ import { env } from "~/env";
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
+    user: DefaultSession["user"] & {
+      id: number;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      image?: string;
+      token: {
+        access: string;
+        refresh: string;
+      };
+    };
   }
 
   // interface User {
@@ -58,35 +76,38 @@ export const authOptions: NextAuthOptions = {
           placeholder: "Enter password",
         },
       },
-      authorize(credentials) {
-        if (
-          credentials?.email === env.ADMIN_EMAIL &&
-          credentials?.password === env.ADMIN_PASSWORD
-        ) {
-          return {
-            id: "1",
-            email: env.ADMIN_EMAIL,
-            name: "Admin",
-          };
+      async authorize(credentials): Promise<User | null> {
+        const token = await authService.signIn({
+          email: credentials!.email,
+          password: credentials!.password,
+        });
+        console.log(token);
+
+        if (!token) {
+          return null;
         }
 
+        // TODO: works only for admin
+        const users = await authService.getUsers(token);
+        console.log(users);
+
+        const user = users?.find((user) => user.email === credentials?.email);
+
+        if (!user) return null;
+
         return {
-          id: "2",
-          email: credentials?.email,
-          name: credentials?.email.split("@")[0],
+          id: user.id.toString(),
+          email: user.email,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          token: token,
         };
       },
     }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
   ],
+  session: {
+    strategy: "jwt",
+  },
 };
 
 /**
