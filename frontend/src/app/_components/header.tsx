@@ -25,9 +25,11 @@ export default function Header() {
   };
 
   return (
-    <header className="flex flex-row items-center justify-between p-4">
-      <div className="flex gap-4">
-        <Link href="/">Loan Portfolio</Link>
+    <header className="flex flex-row items-center justify-between bg-gray-100 p-4">
+      <div className="flex items-center gap-4">
+        <Link className="text-lg font-bold" href="/">
+          Loan Portfolio
+        </Link>
         <Link href="/credits">Credits</Link>
       </div>
       <nav className="flex flex-row gap-4">

@@ -47,14 +47,16 @@ const formSchema = z.object({
   months: z.array(z.number()),
 });
 
-type FormSchema = z.infer<typeof formSchema>;
+export type FormSchema = z.infer<typeof formSchema>;
 
 type LoanCalculatorFormProps = {
   className?: string;
+  onSubmit: (values: FormSchema) => void;
 };
 
 export default function LoanCalculatorForm({
   className,
+  onSubmit,
 }: LoanCalculatorFormProps) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -78,19 +80,11 @@ export default function LoanCalculatorForm({
     return () => subscription.unsubscribe();
   }, [form, form.watch]);
 
-  function onSubmit(values: FormSchema) {
-    const monthsSum = values.months.reduce((acc, curr) => acc + curr, 0);
-    if (monthsSum >= values.amount) {
-      console.log("Error");
-    }
-    console.log(values);
-  }
-
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("flex flex-row items-center gap-10", className)}
+        className={cn("flex flex-row items-start gap-10", className)}
       >
         <div className="space-y-8">
           <FormField
