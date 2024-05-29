@@ -28,14 +28,8 @@ import { cn } from "~/lib/utils";
 import { useEffect, useState } from "react";
 import type { CreditType } from "~/types";
 
-enum LoanType {
-  First = "first",
-  Second = "second",
-  Third = "third",
-}
-
 const formSchema = z.object({
-  type: z.number(),
+  type: z.string(),
   amount: z.number(),
   term: z
     .number()

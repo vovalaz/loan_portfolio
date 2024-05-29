@@ -37,7 +37,7 @@ export default function ConfirmLoanDialog({
         <div className="flex flex-col">
           <div>Total {total}</div>
           <div>Extra amount {credit?.general_expenses}</div>
-          <div>Yearly percent {credit?.annual_rate}</div>
+          <div>Yearly percent {credit?.annual_rate.toFixed(2)}</div>
           <div>Last month amount {lastMonthAmount}</div>
         </div>
         <AlertDialogFooter>

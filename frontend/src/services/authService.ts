@@ -11,7 +11,7 @@ import type {
 
 const signUp = async (request: PostRegisterRequest) => {
   const response = await axios.post<PostRegisterResponse>(
-    "/api/auth/register",
+    "/api/auth/register/",
     request,
   );
 
@@ -25,7 +25,7 @@ const signIn = async (request: PostLoginRequest) => {
 };
 
 const getUser = async (token: Token) => {
-  const response = await axios.get<GetUserResponse>("/api/users", {
+  const response = await axios.get<GetUserResponse>("/api/users/", {
     headers: {
       Authorization: `Bearer ${token.access}`,
     },

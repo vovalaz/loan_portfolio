@@ -2,8 +2,6 @@
 
 import { creditService } from "~/services/creditService";
 import ConfirmLoanDialog from "./_components/confirm-loan-dialog";
-// import { api } from "~/trpc/server";
-// import { getServerAuthSession } from "~/server/auth";
 import Header from "./_components/header";
 import LoanCalculatorForm, {
   type FormSchema,
@@ -11,11 +9,13 @@ import LoanCalculatorForm, {
 import { useEffect, useState } from "react";
 import type { Credit, CreditType } from "~/types";
 import { creditTypeService } from "~/services/creditTypeService";
+// import { useSession } from "next-auth/react";
 
 export default function Home() {
+  const [credit, setCredit] = useState<Credit | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [creditTypes, setCreditTypes] = useState<CreditType[]>([]);
-  const [credit, setCredit] = useState<Credit | null>(null);
+  // const session = useSession();
 
   useEffect(() => {
     const fetchCreditTypes = async () => {
@@ -27,7 +27,6 @@ export default function Home() {
   }, []);
 
   const onSubmit = async (values: FormSchema) => {
-    // setShowDialog(true);
     const monthsSum = values.months.reduce((acc, curr) => acc + curr, 0);
     if (monthsSum >= values.amount) {
       return;
@@ -37,11 +36,12 @@ export default function Home() {
       amount: values.amount,
       term_months: values.term,
       payments: values.months,
-      credit_type: values.type,
-      purpose: "",
+      credit_type: Number(values.type),
+      purpose: "Home improvement",
     });
 
     setCredit(creditResult);
+    setShowDialog(true);
   };
 
   const onDialogConfirm = () => {

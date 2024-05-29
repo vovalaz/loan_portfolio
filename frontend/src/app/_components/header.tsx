@@ -45,7 +45,7 @@ export default function Header() {
               <DropdownMenuTrigger>
                 <Avatar>
                   <AvatarFallback>
-                    {session.user.name?.slice(0, 2)?.toUpperCase()}
+                    {session.user.email?.slice(0, 2)?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>

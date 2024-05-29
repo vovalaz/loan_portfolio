@@ -3,7 +3,7 @@ import type { PostCreditRequest, PostCreditResponse } from "~/types";
 
 const createCredit = async (request: PostCreditRequest) => {
   const response = await axios.post<PostCreditResponse>(
-    "/api/credits",
+    "/api/credits/",
     request,
   );
 
