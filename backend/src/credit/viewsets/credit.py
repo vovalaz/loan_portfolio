@@ -1,9 +1,12 @@
 from typing import Any
+from django.db.models import F
 from django.utils import timezone
 from rest_framework import exceptions, filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
+from scipy.optimize import linprog
+import numpy as np
 
 from credit.models import Credit, UserCredit
 from credit.serializers import CreditSerializer
@@ -17,9 +20,9 @@ class CreditViewSet(viewsets.ModelViewSet):
     ordering_fields = "__all__"
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ("create", "update", "partial_update"):
             permission_classes = [permissions.AllowAny]
-        if self.action in ("destroy", "partial_update", "update"):
+        elif self.action in ("destroy",):
             permission_classes = [permissions.IsAdminUser]
         else:
             permission_classes = [permissions.IsAuthenticated]
@@ -33,7 +36,7 @@ class CreditViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return queryset if user.is_superuser else queryset.filter(user_credits__user=user)
 
-    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=["get"], permission_classes=[permissions.IsAuthenticated])
     def payments(self, request, pk=None):
         credit = self.get_object()
         payments = credit.payment_set.all()
@@ -46,10 +49,8 @@ class CreditViewSet(viewsets.ModelViewSet):
         capital = float(credit.amount) * (1.0 + float(credit_type.rate) / 100.0)
 
         if not payments_amount:
-            payments_amount = [float(credit.amount) / credit.term_months] * (
-                credit.term_months - 1
-            )
-        for month_num, payment_amount in enumerate(payments_amount, start=1):
+            payments_amount = [float(credit.amount) / credit.term_months] * (credit.term_months - 1)
+        for month_num, payment_amount in enumerate(payments_amount, start=2):
             payment_data = {
                 "amount": round(payment_amount, 2),
                 "deadline": str((timezone.now() + timezone.timedelta(days=31 * month_num)).date()),
@@ -95,6 +96,13 @@ class CreditViewSet(viewsets.ModelViewSet):
 
         general_expenses = summ_with_loan_interest - float(serializer.validated_data["amount"])
 
+        sum_with_net_income = 0
+        for i, payment in enumerate(payments, start=1):
+            sum_with_net_income += payment["amount"] / ((1 + credit_type.rate / 100) ** i)
+
+        net_comprehended_income = sum_with_net_income - float(credit.amount)
+
+        credit.net_comprehended_income = round(net_comprehended_income, 2)
         credit.general_expenses = round(general_expenses, 2)
         credit.save()
 
@@ -111,7 +119,7 @@ class CreditViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         partial = request.data
 
-        if 'status' in partial and instance.status == 'draft' and partial['status'] != 'draft':
+        if "status" in partial and instance.status == "draft" and partial["status"] != "draft":
             user = request.user
             UserCredit.objects.get_or_create(credit=instance, user=user)
             payments = instance.payment_set.all()
@@ -125,11 +133,28 @@ class CreditViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=["post"], permission_classes=[permissions.IsAdminUser])
-    def grade_credits(self, request: Request):
+    def grade(self, request: Request):
         credit_ids = request.data.get("credit_ids", [])
-        credits = Credit.objects.filter(id__in=credit_ids)
-        grades = {}
-        for credit in credits:
-            grade = 0
-            grades[credit.id] = grade
-        return Response(grades)
+        credits = Credit.objects.filter(id__in=credit_ids).annotate(
+            rate=F("credit_type__rate"), max_amount=F("credit_type__max_amount")
+        )
+
+        # if not credits:
+        #     return Response({"error": "No valid credits found."}, status=400)
+
+        # D = []
+        # mas_sum = []  # сума кредиту
+        # R = 1000000  # загальна сума банку
+        # for credit in credits:
+        #     D.append(credit.net_comprehended_income)  # ост аргумент місячний відсоток
+        #     mas_sum.append(credit.amount)
+
+        # x = (0, 1)
+        # D = [-elem for elem in D]
+        # result = linprog(D, [Q], R, bounds=[x], method="highs")
+
+        # print(-result.fun)
+        # for i in (result.x):
+        #     print(i)
+
+        # return Response(grades)

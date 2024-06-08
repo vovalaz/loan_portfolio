@@ -27,6 +27,7 @@ class Credit(CreatedUpdatedAt):
     STATUS_CHOICES = (
         ("draft", "Draft"),
         ("waiting", "Waiting for Approval"),
+        ("approved", "Approved"),
         ("rejected", "Rejected"),
         ("ongoing", "Ongoing"),
         ("paid", "Paid"),
@@ -39,6 +40,7 @@ class Credit(CreatedUpdatedAt):
     purpose = models.CharField(max_length=200)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default="draft")
     general_expenses = models.FloatField(null=True, blank=True)
+    net_comprehended_income = models.FloatField(null=True, blank=True)
 
     def clean(self):
         super().clean()
