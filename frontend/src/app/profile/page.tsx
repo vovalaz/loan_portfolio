@@ -4,9 +4,6 @@ import Header from "../_components/header";
 import { getColumns } from "./_components/columns";
 import { CreditsDataTable } from "./_components/credits-data-table";
 
-import { creditService } from "~/services/creditService";
-
-import { getServerAuthSession } from "~/server/auth";
 import { useCreditService } from "~/hooks/useCreditService";
 import { useSession } from "next-auth/react";
 
@@ -36,6 +33,7 @@ export default function ProfilePage() {
         token: session.data!.user.token,
       });
     },
+    isAdmin: session.data?.user.isStaff ?? false,
   });
 
   const name = session.data?.user.firstName;

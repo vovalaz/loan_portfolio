@@ -12,6 +12,7 @@ interface User {
   lastName?: string;
   email?: string;
   image?: string;
+  isStaff: boolean;
   token: {
     access: string;
     refresh: string;
@@ -53,6 +54,7 @@ export const authOptions: NextAuthOptions = {
           lastName: user.lastName,
           email: user.email,
           token: user.token,
+          isStaff: user.isStaff,
         },
       };
     },
@@ -92,6 +94,7 @@ export const authOptions: NextAuthOptions = {
           firstName: user.first_name,
           lastName: user.last_name,
           token: token,
+          isStaff: user.is_staff,
         };
       },
     }),

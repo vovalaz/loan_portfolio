@@ -15,14 +15,22 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Checkbox } from "~/components/ui/checkbox";
 
+const StatusColorMap = {
+  ["ongoing"]: "bg-green-100 text-green-800",
+  ["rejected"]: "bg-red-100 text-red-800",
+  ["waiting"]: "bg-blue-100 text-blue-800",
+};
+
 export const getColumns = ({
   onApproveClick,
   onRejectClick,
+  isAdmin,
 }: {
   onApproveClick: (credit: Credit) => void | Promise<void>;
   onRejectClick: (credit: Credit) => void | Promise<void>;
+  isAdmin: boolean;
 }): ColumnDef<Credit>[] => {
-  return [
+  const result: ColumnDef<Credit>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -58,6 +66,11 @@ export const getColumns = ({
           </Button>
         );
       },
+      cell: ({ row }) => {
+        const status = row.original.status;
+        const color = StatusColorMap[status as keyof typeof StatusColorMap];
+        return <span className={color}>{status}</span>;
+      },
     },
     {
       accessorKey: "purpose",
@@ -71,7 +84,10 @@ export const getColumns = ({
       accessorKey: "amount",
       header: "Amount",
     },
-    {
+  ];
+
+  if (isAdmin) {
+    const column: ColumnDef<Credit> = {
       id: "actions",
       cell: ({ row }) => {
         const credit = row.original;
@@ -99,6 +115,9 @@ export const getColumns = ({
           </DropdownMenu>
         );
       },
-    },
-  ];
+    };
+    result.push(column);
+  }
+
+  return result;
 };
