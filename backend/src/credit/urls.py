@@ -11,4 +11,6 @@ router.register("credits", CreditViewSet, basename="credits")
 
 urlpatterns = router.urls
 
-urlpatterns += [path("credit_types/", CreditTypeListAPIView.as_view(), name="credit_types"),]
+urlpatterns += [
+    path("credit_types/", CreditTypeListAPIView.as_view(), name="credit_types"),
+]

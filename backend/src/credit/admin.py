@@ -5,7 +5,18 @@ from credit.models import Credit, CreditType, UserCredit
 
 @admin.register(Credit)
 class CreditAdmin(admin.ModelAdmin):
-    list_display = ("id", "amount", "term_months", "credit_type", "created_at", "updated_at")
+    list_display = (
+        "id",
+        "amount",
+        "term_months",
+        "credit_type",
+        "created_at",
+        "updated_at",
+        "purpose",
+        "status",
+        "general_expenses",
+        "net_comprehended_income",
+    )
     date_hierarchy = "created_at"
     readonly_fields = ("created_at", "updated_at")
     search_fields = ("=id",)
