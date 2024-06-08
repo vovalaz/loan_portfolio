@@ -1,21 +1,58 @@
+"use client";
+
 import Header from "../_components/header";
-import { columns } from "./_components/columns";
+import { getColumns } from "./_components/columns";
 import { CreditsDataTable } from "./_components/credits-data-table";
 
 import { creditService } from "~/services/creditService";
 
 import { getServerAuthSession } from "~/server/auth";
+import { useCreditService } from "~/hooks/useCreditService";
+import { useSession } from "next-auth/react";
 
-export default async function ProfilePage() {
-  const session = await getServerAuthSession();
-  const credits = await creditService.getAll(session!.user.token);
+export default function ProfilePage() {
+  const session = useSession();
+  const { useGetAllCredits, useApproveCredit, useRejectCredit } =
+    useCreditService();
+  const {
+    data: credits,
+    isLoading,
+    isFetching,
+  } = useGetAllCredits(session.data?.user.token);
+
+  const approveCredit = useApproveCredit();
+  const rejectCredit = useRejectCredit();
+
+  const columns = getColumns({
+    async onApproveClick(credit) {
+      await approveCredit.mutateAsync({
+        id: credit.id,
+        token: session.data!.user.token,
+      });
+    },
+    async onRejectClick(credit) {
+      await rejectCredit.mutateAsync({
+        id: credit.id,
+        token: session.data!.user.token,
+      });
+    },
+  });
+
+  const name = session.data?.user.firstName;
 
   return (
     <>
       <Header />
       <div className="flex w-full flex-col p-4">
-        <div className="max-w-[1000px] p-4">
-          <CreditsDataTable columns={columns} data={credits} />
+        <div>
+          Welcome {name?.length === 0 ? session.data?.user.email : name}
+        </div>
+        <div className=" p-4">
+          <CreditsDataTable
+            columns={columns}
+            data={credits ?? []}
+            isLoading={isLoading || isFetching}
+          />
         </div>
       </div>
     </>

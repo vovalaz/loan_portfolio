@@ -28,12 +28,14 @@ import { DataTablePagination } from "./pagination-controls";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  isLoading?: boolean;
   onRowSelectionChange?: (data: TData[]) => void;
 }
 
 export function CreditsDataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -118,7 +120,7 @@ export function CreditsDataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {isLoading ? "Loading..." : "No results."}
                 </TableCell>
               </TableRow>
             )}

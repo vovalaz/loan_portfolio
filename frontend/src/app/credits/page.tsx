@@ -29,6 +29,8 @@ export default function CreditsPage() {
 
   const onSubmit = async (values: FormSchema) => {
     const monthsSum = values.months.reduce((acc, curr) => acc + curr, 0);
+    console.log(monthsSum);
+
     if (monthsSum >= values.amount) {
       return;
     }
@@ -47,7 +49,7 @@ export default function CreditsPage() {
 
   const onDialogConfirm = async () => {
     try {
-      await creditService.confirmCredit(credit!.id);
+      // await creditService.confirmCredit(credit!.id);
     } finally {
       router.push("/profile");
     }

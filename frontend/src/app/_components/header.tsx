@@ -34,7 +34,7 @@ export default function Header() {
     <header className="flex flex-row items-center justify-between bg-gray-100 p-4">
       <div className="flex items-center gap-4">
         <Link className="text-lg font-bold" href="/">
-          Loan Portfolio
+          Yulia Trust Bank
         </Link>
         <Link href="/credits">Credits</Link>
       </div>

@@ -59,7 +59,7 @@ export default function LoanCalculatorForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       amount: 0,
-      term: 12,
+      term: 0,
     },
   });
 
