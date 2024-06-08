@@ -34,7 +34,7 @@ export default function Header() {
     <header className="flex flex-row items-center justify-between bg-gray-100 p-4">
       <div className="flex items-center gap-4">
         <Link className="text-lg font-bold" href="/">
-          Loan Portfolio
+          Yulia Trust Bank
         </Link>
         <Link href="/credits">Credits</Link>
       </div>
@@ -45,14 +45,14 @@ export default function Header() {
               <DropdownMenuTrigger>
                 <Avatar>
                   <AvatarFallback>
-                    {session.user.name?.slice(0, 2)?.toUpperCase()}
+                    {session.user.email?.slice(0, 2)?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+                <DropdownMenuLabel>{session.user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

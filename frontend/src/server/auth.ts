@@ -12,6 +12,7 @@ interface User {
   lastName?: string;
   email?: string;
   image?: string;
+  isStaff: boolean;
   token: {
     access: string;
     refresh: string;
@@ -26,23 +27,10 @@ interface User {
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: number;
-      firstName?: string;
-      lastName?: string;
-      email?: string;
-      image?: string;
-      token: {
-        access: string;
-        refresh: string;
-      };
-    };
+    user: DefaultSession["user"] & User;
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  type JWT = User;
 }
 
 /**
@@ -52,13 +40,24 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub,
-      },
-    }),
+    jwt: (params) => {
+      return { ...params.token, ...params.user };
+    },
+    session: ({ session, token }) => {
+      const user = token as unknown as User;
+
+      return {
+        ...session,
+        user: {
+          id: token.sub,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          token: user.token,
+          isStaff: user.isStaff,
+        },
+      };
+    },
   },
   providers: [
     CredentialsProvider({
@@ -81,18 +80,12 @@ export const authOptions: NextAuthOptions = {
           email: credentials!.email,
           password: credentials!.password,
         });
-        console.log(token);
 
         if (!token) {
           return null;
         }
 
-        // TODO: works only for admin
-        const users = await authService.getUsers(token);
-        console.log(users);
-
-        const user = users?.find((user) => user.email === credentials?.email);
-
+        const user = await authService.getMe(token);
         if (!user) return null;
 
         return {
@@ -101,6 +94,7 @@ export const authOptions: NextAuthOptions = {
           firstName: user.first_name,
           lastName: user.last_name,
           token: token,
+          isStaff: user.is_staff,
         };
       },
     }),

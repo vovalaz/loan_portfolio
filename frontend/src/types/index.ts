@@ -61,7 +61,7 @@ export type Credit = {
   term_months: number;
   credit_type: number;
   purpose: string;
-  status: string;
+  status: "draft" | "waiting" | "rejected" | "ongoing" | "paid" | "written_off";
   general_expenses: number;
   payments: Payment[];
   annual_rate: number;
@@ -79,3 +79,7 @@ export type CreditType = {
   max_term_months: string;
 };
 export type GetCreditTypesResponse = CreditType[];
+
+export type PatchCreditResponse = Credit;
+
+export type GetCreditsResponse = Credit[];

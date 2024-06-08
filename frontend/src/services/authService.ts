@@ -11,7 +11,7 @@ import type {
 
 const signUp = async (request: PostRegisterRequest) => {
   const response = await axios.post<PostRegisterResponse>(
-    "/api/auth/register",
+    "/api/auth/register/",
     request,
   );
 
@@ -25,7 +25,7 @@ const signIn = async (request: PostLoginRequest) => {
 };
 
 const getUser = async (token: Token) => {
-  const response = await axios.get<GetUserResponse>("/api/users", {
+  const response = await axios.get<GetUserResponse>("/api/users/", {
     headers: {
       Authorization: `Bearer ${token.access}`,
     },
@@ -52,9 +52,24 @@ const getUsers = async (token: Token) => {
   return response.data;
 };
 
+const getMe = async (token: Token) => {
+  const response = await axios.get<GetUserResponse>("/api/users/me", {
+    headers: {
+      Authorization: `Bearer ${token.access}`,
+    },
+  });
+
+  if (response.status !== 200) {
+    return null;
+  }
+
+  return response.data;
+};
+
 export const authService = {
   signIn,
   signUp,
   getUser,
   getUsers,
+  getMe,
 };
