@@ -52,9 +52,24 @@ const getUsers = async (token: Token) => {
   return response.data;
 };
 
+const getMe = async (token: Token) => {
+  const response = await axios.get<GetUserResponse>("/api/users/me", {
+    headers: {
+      Authorization: `Bearer ${token.access}`,
+    },
+  });
+
+  if (response.status !== 200) {
+    return null;
+  }
+
+  return response.data;
+};
+
 export const authService = {
   signIn,
   signUp,
   getUser,
   getUsers,
+  getMe,
 };

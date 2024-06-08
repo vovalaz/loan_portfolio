@@ -26,23 +26,8 @@ interface User {
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: number;
-      firstName?: string;
-      lastName?: string;
-      email?: string;
-      image?: string;
-      token: {
-        access: string;
-        refresh: string;
-      };
-    };
+    user: DefaultSession["user"] & User;
   }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -52,13 +37,17 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.sub,
-      },
-    }),
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          id: token.sub,
+          firstName: session.user?.firstName,
+          lastName: session.user?.lastName,
+          email: session.user?.email,
+        },
+      };
+    },
   },
   providers: [
     CredentialsProvider({
@@ -81,17 +70,12 @@ export const authOptions: NextAuthOptions = {
           email: credentials!.email,
           password: credentials!.password,
         });
-        console.log(token);
 
         if (!token) {
           return null;
         }
 
-        // TODO: works only for admin
-        const users = await authService.getUsers(token);
-        console.log(users);
-
-        const user = users?.find((user) => user.email === credentials?.email);
+        const user = await authService.getMe(token);
 
         if (!user) return null;
 

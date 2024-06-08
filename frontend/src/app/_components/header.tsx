@@ -50,9 +50,9 @@ export default function Header() {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>{session.user.name}</DropdownMenuLabel>
+                <DropdownMenuLabel>{session.user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

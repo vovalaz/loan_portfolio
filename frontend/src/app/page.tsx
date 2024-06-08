@@ -1,65 +1,119 @@
-"use client";
-
-import { creditService } from "~/services/creditService";
-import ConfirmLoanDialog from "./_components/confirm-loan-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import Header from "./_components/header";
-import LoanCalculatorForm, {
-  type FormSchema,
-} from "./_components/loan-calculator-form";
-import { useEffect, useState } from "react";
-import type { Credit, CreditType } from "~/types";
+import { Separator } from "~/components/ui/separator";
 import { creditTypeService } from "~/services/creditTypeService";
-// import { useSession } from "next-auth/react";
 
-export default function Home() {
-  const [credit, setCredit] = useState<Credit | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
-  const [creditTypes, setCreditTypes] = useState<CreditType[]>([]);
-  // const session = useSession();
+const tabs = [
+  {
+    value: "default",
+    label: "General lending conditions",
+  },
+  {
+    value: "confirmed",
+    label: "With confirmation of the intended use of the loan",
+  },
+  {
+    value: "confirmed-car",
+    label:
+      "For the purchase of a car with confirmation of the intended use of the loan",
+  },
+  {
+    value: "loyal-clients",
+    label: "For our loyal clients",
+  },
+];
 
-  useEffect(() => {
-    const fetchCreditTypes = async () => {
-      const creditTypesResult = await creditTypeService.getAll();
-      setCreditTypes(creditTypesResult);
-    };
-
-    void fetchCreditTypes();
-  }, []);
-
-  const onSubmit = async (values: FormSchema) => {
-    const monthsSum = values.months.reduce((acc, curr) => acc + curr, 0);
-    if (monthsSum >= values.amount) {
-      return;
-    }
-
-    const creditResult = await creditService.createCredit({
-      amount: values.amount,
-      term_months: values.term,
-      payments: values.months,
-      credit_type: Number(values.type),
-      purpose: "Home improvement",
-    });
-
-    setCredit(creditResult);
-    setShowDialog(true);
-  };
-
-  const onDialogConfirm = () => {
-    console.log("Confirm");
-  };
+export default async function Home() {
+  const creditTypes = await creditTypeService.getAll();
 
   return (
     <>
       <Header />
       <div className="flex flex-col items-center">
-        <div className="text-lg font-bold">Loan portfolio</div>
-        <LoanCalculatorForm onSubmit={onSubmit} creditTypes={creditTypes} />
-        <ConfirmLoanDialog
-          credit={credit}
-          open={showDialog}
-          onOpenChange={setShowDialog}
-          onDialogConfirm={onDialogConfirm}
-        />
+        <Tabs
+          className="flex flex-col items-center"
+          defaultValue={creditTypes.at(0)?.id.toString()}
+        >
+          <TabsList>
+            {creditTypes.map((creditType) => (
+              <TabsTrigger key={creditType.id} value={creditType.id.toString()}>
+                {creditType.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {creditTypes.map((creditType) => (
+            <TabsContent
+              key={creditType.id}
+              value={creditType.id.toString()}
+              className="flex flex-col items-center gap-4 self-center p-4"
+            >
+              <div className="text-2xl font-bold">{creditType.name}</div>
+              <div className="flex flex-col gap-4 bg-gray-50 p-4">
+                <div className="flex justify-between gap-4">
+                  <div>Сума кредиту</div>
+                  <div>
+                    від {creditType.min_amount} до {creditType.max_amount} грн
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex justify-between gap-4">
+                  <div>Строк кредиту</div>
+                  <div>
+                    від {creditType.min_term_months} до{" "}
+                    {creditType.max_term_months} місяців
+                  </div>
+                </div>
+                <Separator />
+                <div className="flex justify-between gap-4">
+                  <div>Процентна ставка</div>
+                  <div>
+                    від{" "}
+                    {Math.floor(Number(creditType.rate) * 100 * 12) > 56
+                      ? 56
+                      : Math.floor(Number(creditType.rate) * 100 * 12)}{" "}
+                    % річних
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          ))}
+          {/* 
+          {tabs.map((tab) => (
+            <TabsContent
+              key={tab.value}
+              value={tab.value}
+              className="flex w-1/2 flex-col items-center gap-4 self-center p-4"
+            >
+              <div className="text-2xl font-bold">Умови</div>
+              <div className="flex flex-col gap-4 bg-gray-50 p-4">
+                <div className="flex justify-between gap-4">
+                  <div>Сума кредиту</div>
+                  <div>від 30 000 до 250 000 грн</div>
+                </div>
+                <Separator />
+                <div className="flex justify-between gap-4">
+                  <div>Строк кредиту</div>
+                  <div>від 1 до 5 років</div>
+                </div>
+                <Separator />
+                <div className="flex justify-between gap-4">
+                  <div>Процентна ставка</div>
+                  <div>
+                    56 % річних (Процентна ставка може бути встановлена у
+                    розмірі від 36%*)
+                  </div>
+                </div>
+              </div>
+              <div>
+                *Процентна ставка може бути встановлена у розмірі 36% річних
+                починаючи з 31-го календарного дня користування кредитом - за
+                умови надання Клієнтом в строк не пізніше 25-го календарного дня
+                (включно) з дати отримання кредиту підтверджуючих документів
+                щодо цільового використання коштів на придбання автомобіля
+              </div>
+            </TabsContent>
+          ))} */}
+        </Tabs>
       </div>
     </>
   );
