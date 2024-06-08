@@ -79,3 +79,5 @@ export type CreditType = {
   max_term_months: string;
 };
 export type GetCreditTypesResponse = CreditType[];
+
+export type PatchCreditResponse = Credit;

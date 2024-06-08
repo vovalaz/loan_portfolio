@@ -9,9 +9,10 @@ import LoanCalculatorForm, {
 import { useEffect, useState } from "react";
 import type { Credit, CreditType } from "~/types";
 import { creditTypeService } from "~/services/creditTypeService";
-// import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function CreditsPage() {
+  const router = useRouter();
   const [credit, setCredit] = useState<Credit | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [creditTypes, setCreditTypes] = useState<CreditType[]>([]);
@@ -44,8 +45,12 @@ export default function CreditsPage() {
     setShowDialog(true);
   };
 
-  const onDialogConfirm = () => {
-    console.log("Confirm");
+  const onDialogConfirm = async () => {
+    try {
+      await creditService.confirmCredit(credit!.id);
+    } finally {
+      router.push("/profile");
+    }
   };
 
   return (
