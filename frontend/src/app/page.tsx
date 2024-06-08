@@ -29,7 +29,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <div className="flex flex-col items-center">
+      <div className="my-4 flex flex-col items-center">
         <Tabs
           className="flex flex-col items-center"
           defaultValue={creditTypes.at(0)?.id.toString()}

@@ -28,6 +28,8 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & User;
   }
+
+  type JWT = User;
 }
 
 /**
@@ -37,14 +39,20 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
+    jwt: (params) => {
+      return { ...params.token, ...params.user };
+    },
     session: ({ session, token }) => {
+      const user = token as unknown as User;
+
       return {
         ...session,
         user: {
           id: token.sub,
-          firstName: session.user?.firstName,
-          lastName: session.user?.lastName,
-          email: session.user?.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          token: user.token,
         },
       };
     },
@@ -76,7 +84,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = await authService.getMe(token);
-
         if (!user) return null;
 
         return {
