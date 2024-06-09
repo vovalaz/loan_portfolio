@@ -99,7 +99,9 @@ export function CreditsDataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <Button onClick={handleShowGradeClick}>Show Grade</Button>
+        {session.data?.user.isStaff && (
+          <Button onClick={handleShowGradeClick}>Show Grade</Button>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>

@@ -8,7 +8,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
-import { cn } from "~/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
 import type { Credit, Grade } from "~/types";
 
 type GradeDialogProps = {
@@ -30,27 +37,38 @@ export default function GradeDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Grade</AlertDialogTitle>
         </AlertDialogHeader>
-        <div className="grid">
-          {credits?.map((credit) => {
-            const grade = grades?.find((g) => g.credit_id === credit.id);
-            return (
-              <div
-                key={credit.id}
-                className={cn(
-                  "flex justify-between p-2",
-                  grade?.recommended_to_approve
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800",
-                )}
-              >
-                <div>{credit.amount}</div>
-                <div>{credit.purpose}</div>
-                <div>{credit.term_months}</div>
-                <div>{credit.net_comprehended_income}</div>
-              </div>
-            );
-          })}
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Amount</TableHead>
+              <TableHead>Purpose</TableHead>
+              <TableHead>Term Months</TableHead>
+              <TableHead>Net Comprehended Income</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {credits?.map((credit) => {
+              const grade = grades?.find((g) => g.credit_id === credit.id);
+              return (
+                <TableRow
+                  key={credit.id}
+                  className={
+                    grade?.recommended_to_approve
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }
+                >
+                  <TableCell>{credit.amount}</TableCell>
+                  <TableCell>{credit.purpose}</TableCell>
+                  <TableCell>{credit.term_months}</TableCell>
+                  <TableCell>{credit.net_comprehended_income}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+
+        <div className="grid"></div>
         <AlertDialogFooter>
           <AlertDialogCancel>Close</AlertDialogCancel>
         </AlertDialogFooter>
