@@ -1,4 +1,5 @@
 from typing import Any
+
 from django.db.models import F
 from django.utils import timezone
 from rest_framework import exceptions, filters, permissions, status, viewsets
@@ -6,7 +7,6 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from scipy.optimize import linprog
-import numpy as np
 
 from credit.models import Credit, UserCredit
 from credit.serializers import CreditSerializer
@@ -102,8 +102,8 @@ class CreditViewSet(viewsets.ModelViewSet):
 
         net_comprehended_income = sum_with_net_income - float(credit.amount)
 
-        credit.net_comprehended_income = round(net_comprehended_income, 2)
-        credit.general_expenses = round(general_expenses, 2)
+        credit.net_comprehended_income = round(net_comprehended_income, 5)
+        credit.general_expenses = round(general_expenses, 5)
         credit.save()
 
         self.create_payments(payments, credit)
@@ -139,22 +139,22 @@ class CreditViewSet(viewsets.ModelViewSet):
             rate=F("credit_type__rate"), max_amount=F("credit_type__max_amount")
         )
 
-        # if not credits:
-        #     return Response({"error": "No valid credits found."}, status=400)
+        if not credits:
+            return Response({"error": "No valid credits found."}, status=400)
 
-        # D = []
-        # mas_sum = []  # сума кредиту
-        # R = 1000000  # загальна сума банку
-        # for credit in credits:
-        #     D.append(credit.net_comprehended_income)  # ост аргумент місячний відсоток
-        #     mas_sum.append(credit.amount)
+        D = []
+        mas_sum = []
+        R = 500
+        for credit in credits:
+            D.append(credit.net_comprehended_income)
+            mas_sum.append(credit.amount)
 
-        # x = (0, 1)
-        # D = [-elem for elem in D]
-        # result = linprog(D, [Q], R, bounds=[x], method="highs")
+        x = (0, 1)
+        D = [-elem for elem in D]
+        result = linprog(D, [mas_sum], R, bounds=[x], method="highs")
 
-        # print(-result.fun)
-        # for i in (result.x):
-        #     print(i)
+        response = {"grades": [], "fun": -result.fun}
+        for x, credit in zip(result.x, credits):
+            response["grades"].append({"credit_id": int(credit.id), "recommended_to_approve": bool(x)})
 
-        # return Response(grades)
+        return Response(response)
