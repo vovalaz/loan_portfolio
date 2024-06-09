@@ -87,7 +87,7 @@ export const getColumns = ({
   ];
 
   if (isAdmin) {
-    const column: ColumnDef<Credit> = {
+    const actions: ColumnDef<Credit> = {
       id: "actions",
       cell: ({ row }) => {
         const credit = row.original;
@@ -116,7 +116,12 @@ export const getColumns = ({
         );
       },
     };
-    result.push(column);
+    const netComprehendedIncome: ColumnDef<Credit> = {
+      accessorKey: "net_comprehended_income",
+      header: "Net Comprehended Income",
+    };
+
+    result.push(actions, netComprehendedIncome);
   }
 
   return result;
