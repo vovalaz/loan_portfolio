@@ -135,6 +135,7 @@ class CreditViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], permission_classes=[permissions.IsAdminUser])
     def grade(self, request: Request):
         credit_ids = request.data.get("credit_ids", [])
+        R = request.data.get("R", [])
         credits = Credit.objects.filter(id__in=credit_ids).annotate(
             rate=F("credit_type__rate"), max_amount=F("credit_type__max_amount")
         )
@@ -144,7 +145,6 @@ class CreditViewSet(viewsets.ModelViewSet):
 
         D = []
         mas_sum = []
-        R = 500
         for credit in credits:
             D.append(credit.net_comprehended_income)
             mas_sum.append(credit.amount)
