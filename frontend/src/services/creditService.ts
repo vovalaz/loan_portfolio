@@ -5,6 +5,7 @@ import type {
   PatchCreditResponse,
   PostCreditRequest,
   PostCreditResponse,
+  PostGradeResponse,
   Token,
 } from "~/types";
 
@@ -88,6 +89,23 @@ const getPayments = async (id: number, token: Token) => {
   return response.data;
 };
 
+const getGrade = async (ids: number[], creditAmount: number, token: Token) => {
+  const response = await axios.post<PostGradeResponse>(
+    `/api/credits/grade/`,
+    {
+      credit_ids: ids,
+      credit_amount: creditAmount,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token.access}`,
+      },
+    },
+  );
+
+  return response.data;
+};
+
 export const creditService = {
   getAll,
   createCredit,
@@ -95,4 +113,5 @@ export const creditService = {
   approveCredit,
   rejectCredit,
   getPayments,
+  getGrade,
 };
