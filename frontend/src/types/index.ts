@@ -54,6 +54,8 @@ export type Payment = {
   amount: number;
   deadline: string;
   credit: number;
+  id: number;
+  status: string;
 };
 
 export type Credit = {
@@ -86,3 +88,5 @@ export type GetCreditTypesResponse = CreditType[];
 export type PatchCreditResponse = Credit;
 
 export type GetCreditsResponse = Credit[];
+
+export type GetPaymentsResponse = Payment[];

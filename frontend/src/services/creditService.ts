@@ -1,6 +1,7 @@
 import { axios } from "~/lib/axios";
 import type {
   GetCreditsResponse,
+  GetPaymentsResponse,
   PatchCreditResponse,
   PostCreditRequest,
   PostCreditResponse,
@@ -74,10 +75,24 @@ const rejectCredit = async (id: number, token: Token) => {
   return response.data;
 };
 
+const getPayments = async (id: number, token: Token) => {
+  const response = await axios.get<GetPaymentsResponse>(
+    `/api/credits/${id}/payments/`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.access}`,
+      },
+    },
+  );
+
+  return response.data;
+};
+
 export const creditService = {
   getAll,
   createCredit,
   confirmCredit,
   approveCredit,
   rejectCredit,
+  getPayments,
 };
