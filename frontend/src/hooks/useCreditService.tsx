@@ -40,10 +40,19 @@ const useRejectCredit = () => {
   });
 };
 
+const useGetPayments = (id?: number, token?: Token) => {
+  return useQuery({
+    queryKey: ["getPayments", id],
+    queryFn: () => creditService.getPayments(id!, token!),
+    enabled: !!token && !!id,
+  });
+};
+
 export const useCreditService = () => {
   return {
     useGetAllCredits,
     useApproveCredit,
     useRejectCredit,
+    useGetPayments,
   };
 };

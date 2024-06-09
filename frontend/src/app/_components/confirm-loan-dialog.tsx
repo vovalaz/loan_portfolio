@@ -39,6 +39,9 @@ export default function ConfirmLoanDialog({
           <div>Extra amount {credit?.general_expenses}</div>
           <div>Yearly percent {credit?.annual_rate.toFixed(2)}</div>
           <div>Last month amount {lastMonthAmount}</div>
+          <div>
+            Net Comprehended Income {credit?.net_comprehended_income.toFixed(2)}
+          </div>
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>

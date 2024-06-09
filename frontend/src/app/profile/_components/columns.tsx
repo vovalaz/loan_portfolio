@@ -25,9 +25,11 @@ export const getColumns = ({
   onApproveClick,
   onRejectClick,
   isAdmin,
+  onViewPaymentDetailsClick,
 }: {
   onApproveClick: (credit: Credit) => void | Promise<void>;
   onRejectClick: (credit: Credit) => void | Promise<void>;
+  onViewPaymentDetailsClick?: (credit: Credit) => void | Promise<void>;
   isAdmin: boolean;
 }): ColumnDef<Credit>[] => {
   const result: ColumnDef<Credit>[] = [
@@ -87,7 +89,7 @@ export const getColumns = ({
   ];
 
   if (isAdmin) {
-    const column: ColumnDef<Credit> = {
+    const actions: ColumnDef<Credit> = {
       id: "actions",
       cell: ({ row }) => {
         const credit = row.original;
@@ -109,14 +111,47 @@ export const getColumns = ({
               <DropdownMenuItem onClick={() => onRejectClick(credit)}>
                 Reject credit
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
       },
     };
-    result.push(column);
+    const netComprehendedIncome: ColumnDef<Credit> = {
+      accessorKey: "net_comprehended_income",
+      header: "Net Comprehended Income",
+    };
+
+    result.push(netComprehendedIncome, actions);
+  } else {
+    const actions: ColumnDef<Credit> = {
+      id: "actions",
+      cell: ({ row }) => {
+        const credit = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await onViewPaymentDetailsClick?.(credit);
+                }}
+              >
+                View payments
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    };
+
+    result.push(actions);
   }
 
   return result;

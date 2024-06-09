@@ -6,6 +6,9 @@ import { CreditsDataTable } from "./_components/credits-data-table";
 
 import { useCreditService } from "~/hooks/useCreditService";
 import { useSession } from "next-auth/react";
+import PaymentsDialog from "./_components/payments-dialog";
+import { useEffect, useState } from "react";
+import type { Credit } from "~/types";
 
 export default function ProfilePage() {
   const session = useSession();
@@ -19,6 +22,14 @@ export default function ProfilePage() {
 
   const approveCredit = useApproveCredit();
   const rejectCredit = useRejectCredit();
+
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [selectedCredit, setSelectedCredit] = useState<Credit | null>(null);
+  useEffect(() => {
+    if (!paymentDialogOpen) {
+      setSelectedCredit(null);
+    }
+  }, [paymentDialogOpen]);
 
   const columns = getColumns({
     async onApproveClick(credit) {
@@ -34,6 +45,10 @@ export default function ProfilePage() {
       });
     },
     isAdmin: session.data?.user.isStaff ?? false,
+    onViewPaymentDetailsClick: (credit) => {
+      setSelectedCredit(credit);
+      setPaymentDialogOpen(true);
+    },
   });
 
   const name = session.data?.user.firstName;
@@ -52,6 +67,11 @@ export default function ProfilePage() {
             isLoading={isLoading || isFetching}
           />
         </div>
+        <PaymentsDialog
+          open={paymentDialogOpen}
+          onOpenChange={setPaymentDialogOpen}
+          credit={selectedCredit}
+        />
       </div>
     </>
   );

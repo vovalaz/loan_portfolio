@@ -10,9 +10,11 @@ import { useEffect, useState } from "react";
 import type { Credit, CreditType } from "~/types";
 import { creditTypeService } from "~/services/creditTypeService";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function CreditsPage() {
   const router = useRouter();
+  const session = useSession();
   const [credit, setCredit] = useState<Credit | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [creditTypes, setCreditTypes] = useState<CreditType[]>([]);
@@ -29,7 +31,7 @@ export default function CreditsPage() {
 
   const onSubmit = async (values: FormSchema) => {
     const monthsSum = values.months.reduce((acc, curr) => acc + curr, 0);
-    console.log(monthsSum);
+    console.log(values.months);
 
     if (monthsSum >= values.amount) {
       return;
@@ -40,7 +42,7 @@ export default function CreditsPage() {
       term_months: values.term,
       payments: values.months,
       credit_type: Number(values.type),
-      purpose: "Home improvement",
+      purpose: values.purpose ?? "",
     });
 
     setCredit(creditResult);
@@ -48,8 +50,9 @@ export default function CreditsPage() {
   };
 
   const onDialogConfirm = async () => {
+    // if no token redirect to sign in The Art of God of War: Ascension
     try {
-      // await creditService.confirmCredit(credit!.id);
+      await creditService.confirmCredit(credit!.id, session.data!.user.token);
     } finally {
       router.push("/profile");
     }
