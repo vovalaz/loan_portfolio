@@ -28,12 +28,15 @@ import { useCreditService } from "~/hooks/useCreditService";
 import { useSession } from "next-auth/react";
 import type { Credit, Grade } from "~/types";
 import GradeDialog from "./grade-dialog";
+import CreditAmountDialog from "./credit-amout-dialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
 }
+
+const defaultCreditAmount = 100000;
 
 export function CreditsDataTable<TData, TValue>({
   columns,
@@ -66,10 +69,23 @@ export function CreditsDataTable<TData, TValue>({
   const getGrade = useGetGrade();
 
   const [openGradeDialog, setOpenGradeDialog] = useState(false);
+  const [openCreditAmountDialog, setOpenCreditAmountDialog] = useState(false);
+
+  const [creditAmount, setCreditAmount] = useState(defaultCreditAmount);
   const [selectedCredits, setSelectedCredits] = useState<Credit[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
 
-  const handleShowGradeClick = async () => {
+  const handleShowGradeClick = () => {
+    const data = table
+      .getFilteredSelectedRowModel()
+      .rows.map((row) => row.original as Credit);
+
+    if (!data?.length) return;
+
+    setOpenCreditAmountDialog(true);
+  };
+
+  const handleShowGrade = async () => {
     const data = table
       .getFilteredSelectedRowModel()
       .rows.map((row) => row.original as Credit);
@@ -78,6 +94,7 @@ export function CreditsDataTable<TData, TValue>({
 
     const gradeResult = await getGrade.mutateAsync({
       ids: data.map((d) => d.id),
+      creditAmount: creditAmount,
       token: session.data!.user.token,
     });
 
@@ -159,6 +176,14 @@ export function CreditsDataTable<TData, TValue>({
         onOpenChange={setOpenGradeDialog}
         credits={selectedCredits}
         grades={grades}
+        creditAmount={creditAmount}
+      />
+      <CreditAmountDialog
+        open={openCreditAmountDialog}
+        onOpenChange={setOpenCreditAmountDialog}
+        creditAmount={creditAmount}
+        setCreditAmount={setCreditAmount}
+        handleConfirmClick={handleShowGrade}
       />
     </div>
   );

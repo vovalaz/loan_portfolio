@@ -89,11 +89,12 @@ const getPayments = async (id: number, token: Token) => {
   return response.data;
 };
 
-const getGrade = async (ids: number[], token: Token) => {
+const getGrade = async (ids: number[], creditAmount: number, token: Token) => {
   const response = await axios.post<PostGradeResponse>(
     `/api/credits/grade/`,
     {
       credit_ids: ids,
+      credit_amount: creditAmount,
     },
     {
       headers: {

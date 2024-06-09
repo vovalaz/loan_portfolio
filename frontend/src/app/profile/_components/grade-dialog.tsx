@@ -4,6 +4,7 @@ import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -23,6 +24,7 @@ type GradeDialogProps = {
   onOpenChange: (show: boolean) => void;
   credits: Credit[] | null;
   grades: Grade[] | null;
+  creditAmount: number;
 };
 
 export default function GradeDialog({
@@ -30,12 +32,16 @@ export default function GradeDialog({
   open,
   credits,
   grades,
+  creditAmount,
 }: GradeDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Grade</AlertDialogTitle>
+          <AlertDialogDescription>
+            Credit Amount: {creditAmount}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <Table>
           <TableHeader>
@@ -67,8 +73,6 @@ export default function GradeDialog({
             })}
           </TableBody>
         </Table>
-
-        <div className="grid"></div>
         <AlertDialogFooter>
           <AlertDialogCancel>Close</AlertDialogCancel>
         </AlertDialogFooter>

@@ -51,8 +51,15 @@ const useGetPayments = (id?: number, token?: Token) => {
 const useGetGrade = () => {
   return useMutation({
     mutationKey: ["getGrade"],
-    mutationFn: ({ ids, token }: { ids: number[]; token: Token }) =>
-      creditService.getGrade(ids, token),
+    mutationFn: ({
+      ids,
+      creditAmount,
+      token,
+    }: {
+      ids: number[];
+      creditAmount: number;
+      token: Token;
+    }) => creditService.getGrade(ids, creditAmount, token),
   });
 };
 
