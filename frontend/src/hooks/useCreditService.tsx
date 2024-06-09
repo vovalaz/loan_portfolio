@@ -48,11 +48,20 @@ const useGetPayments = (id?: number, token?: Token) => {
   });
 };
 
+const useGetGrade = () => {
+  return useMutation({
+    mutationKey: ["getGrade"],
+    mutationFn: ({ ids, token }: { ids: number[]; token: Token }) =>
+      creditService.getGrade(ids, token),
+  });
+};
+
 export const useCreditService = () => {
   return {
     useGetAllCredits,
     useApproveCredit,
     useRejectCredit,
     useGetPayments,
+    useGetGrade,
   };
 };

@@ -72,6 +72,11 @@ export type Credit = {
   user: User;
 };
 
+export type Grade = {
+  credit_id: number;
+  recommended_to_approve: boolean;
+};
+
 export type PostCreditResponse = Credit;
 
 export type CreditType = {
@@ -90,3 +95,8 @@ export type PatchCreditResponse = Credit;
 export type GetCreditsResponse = Credit[];
 
 export type GetPaymentsResponse = Payment[];
+
+export type PostGradeResponse = {
+  grades: Grade[];
+  fun: number;
+};
