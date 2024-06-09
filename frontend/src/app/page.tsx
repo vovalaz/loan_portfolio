@@ -19,7 +19,7 @@ export default async function Home() {
     <>
       <Header />
       <div className="flex flex-col gap-10">
-        <div className="flex h-[66vh] items-center justify-between bg-[#c0c0c0] px-[20%]">
+        <div className="flex h-[66vh] items-center justify-center bg-[#c0c0c0] px-[20%] max-sm:flex-col sm:justify-between">
           <div>
             <div className="text-4xl font-bold">
               Welcome to the bank of the future
@@ -32,7 +32,7 @@ export default async function Home() {
             <Image src={Yulia} alt="Yulia" height={550} width={550} />
           </div>
         </div>
-        <div className="my-4 flex flex-col items-center gap-40">
+        <div className="my-4 flex flex-col items-center gap-40 p-4">
           {creditTypes.length > 0 && (
             <Tabs
               className="flex flex-col items-center"

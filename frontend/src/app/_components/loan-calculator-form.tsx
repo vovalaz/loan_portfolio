@@ -40,6 +40,7 @@ const formSchema = z.object({
       message: "Term must be between 1 and 60 months",
     }),
   months: z.array(z.number()),
+  purpose: z.string().nullable(),
 });
 
 export type FormSchema = z.infer<typeof formSchema>;
@@ -71,11 +72,18 @@ export default function LoanCalculatorForm({
     const subscription = form.watch((value, { name, type }) => {
       if (name === "term" && type === "change") {
         const term = Number(value.term) || 0;
-        setAdditionalFields(Math.max(0, Math.min(59, term - 1)));
+        Array.from({ length: additionalFields }, (_, index) => index).forEach(
+          (index) => {
+            form.unregister(`months.${index}`);
+          },
+        );
+
+        const newFields = Math.max(0, Math.min(59, term - 1));
+        setAdditionalFields(newFields);
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, form.watch]);
+  }, [additionalFields, form, form.watch]);
 
   return (
     <Form {...form}>
@@ -145,6 +153,23 @@ export default function LoanCalculatorForm({
                 </FormControl>
                 <FormDescription>Enter loan term in months</FormDescription>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="purpose"
+            render={() => (
+              <FormItem>
+                <FormLabel>Purpose</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Enter loan purpose"
+                    {...form.register("purpose")}
+                  />
+                </FormControl>
+                <FormDescription>Enter loan purpose</FormDescription>
               </FormItem>
             )}
           />

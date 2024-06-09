@@ -12,6 +12,7 @@ const userSchema = z.object({
   updated_at: z.date(),
   email: z.string(),
   password: z.string(),
+  risk: z.number(),
 });
 const tokenSchema = z.object({
   access: z.string(),
@@ -63,8 +64,10 @@ export type Credit = {
   purpose: string;
   status: "draft" | "waiting" | "rejected" | "ongoing" | "paid" | "written_off";
   general_expenses: number;
-  payments: Payment[];
+  net_comprehended_income: number;
   annual_rate: number;
+  payments: Payment[];
+  user: User;
 };
 
 export type PostCreditResponse = Credit;
