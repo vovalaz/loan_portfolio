@@ -1,9 +1,8 @@
 from django.urls import path
-
 from rest_framework.routers import DefaultRouter
 
-from credit.viewsets import CreditViewSet
 from credit.views import CreditTypeListAPIView
+from credit.viewsets import CreditViewSet
 
 router = DefaultRouter()
 
